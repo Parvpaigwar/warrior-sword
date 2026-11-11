@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>The Warrior Sword — Collector's Wall Piece</title>
+  <meta name="description" content="A fantasy dragon display sword on a walnut wall plaque. Mirror-polished steel, dragon-forged hilt, ready to hang. ₹2,499." />
+  <meta name="theme-color" content="#f6f4f0" />
+  <meta property="og:title" content="The Warrior Sword — Collector's Wall Piece" />
+  <meta property="og:description" content="Mirror steel. Dragon-forged hilt. Walnut wall plaque. ₹2,499." />
+  <meta property="og:image" content="/images/poster-sunlit.webp" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 2l2 6v14h-4V8z' fill='%23171310'/><path d='M9 20h14l-3 3h-8z' fill='%239b5a36'/><rect x='14.5' y='23' width='3' height='7' fill='%23171310'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <!-- loader -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__mark">
+      <svg viewBox="0 0 40 120" class="loader__sword"><path d="M20 4 L23 18 L23 80 L20 92 L17 80 L17 18 Z" /><path d="M8 80 H32 L28 86 H12 Z" /><rect x="18" y="86" width="4" height="22" /><circle cx="20" cy="112" r="4" /></svg>
+    </div>
+    <div class="loader__word"><span>W</span><span>A</span><span>R</span><span>R</span><span>I</span><span>O</span><span>R</span></div>
+    <div class="loader__bar"><i id="loaderBar"></i></div>
+    <div class="loader__pct" id="loaderPct">00</div>
+  </div>
+
+  <div class="grain" aria-hidden="true"></div>
+  <canvas id="stage" class="stage" aria-hidden="true"></canvas>
+  <div class="hotspot" id="hotspot" aria-hidden="true"><i></i></div>
+
+  <!-- nav -->
+  <header class="nav" id="nav">
+    <a href="#top" class="nav__logo" data-scroll>
+      <span class="nav__logo-mark">✦</span>
+      <span>WARRIOR</span>
+    </a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="#story" data-scroll>Story</a>
+      <a href="#anatomy" data-scroll>Anatomy</a>
+      <a href="#viewer" data-scroll>3D View</a>
+      <a href="#dimensions" data-scroll>Dimensions</a>
+      <a href="#gallery" data-scroll>Gallery</a>
+      <a href="#faq" data-scroll>FAQ</a>
+    </nav>
+    <div class="nav__actions">
+      <a href="#buy" class="btn btn--sm btn--dark nav__buy magnetic" data-scroll>Buy · <span data-price></span></a>
+      <button class="nav__cart" id="cartBtn" aria-label="Open cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="nav__count" id="cartCount">0</span>
+      </button>
+      <button class="nav__burger" id="burger" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+    </div>
+  </header>
+
+  <div class="menu" id="menu" aria-hidden="true">
+    <nav>
+      <a href="#story" data-scroll>Story</a>
+      <a href="#anatomy" data-scroll>Anatomy</a>
+      <a href="#viewer" data-scroll>3D View</a>
+      <a href="#dimensions" data-scroll>Dimensions</a>
+      <a href="#gallery" data-scroll>Gallery</a>
+      <a href="#buy" data-scroll>Buy now</a>
+      <a href="#faq" data-scroll>FAQ</a>
+    </nav>
+    <p class="menu__foot">Collector's Series · No. 01</p>
+  </div>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" id="hero" data-stage="hero">
+      <div class="hero__light" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="hero__ring" aria-hidden="true"></div>
+      <div class="hero__content">
+        <p class="eyebrow hero__eyebrow"><span class="dot"></span> Collector's Series · No. 01</p>
+        <h1 class="hero__title">
+          <span class="hero__the">The</span>
+          <span class="hero__line" data-split>Warrior</span>
+          <span class="hero__line hero__line--sm" data-split>Sword</span>
+        </h1>
+        <p class="hero__sub">A fantasy dragon display sword on a dark walnut wall plaque — mirror-polished steel, a dragon-forged hilt and hand-finished tribal etching. Made to command a wall.</p>
+        <div class="hero__buy">
+          <div class="price"><span class="price__now" data-price></span><span class="price__note">Pan-India delivery · wall-mount kit included</span></div>
+          <div class="hero__ctas">
+            <button class="btn btn--dark magnetic" data-add-to-cart><span>Add to cart</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+            <a href="#viewer" class="btn btn--ghost magnetic" data-scroll><span>Explore in 3D</span></a>
+          </div>
+        </div>
+        <ul class="hero__facts">
+          <li><b>95</b><span>cm sword</span></li>
+          <li><b>104</b><span>cm plaque</span></li>
+          <li><b>Ready</b><span>to hang</span></li>
+        </ul>
+      </div>
+      <div class="hero__scroll" aria-hidden="true"><span>Scroll</span><i></i></div>
+      <div class="hero__badge" aria-hidden="true">
+        <svg viewBox="0 0 120 120"><defs><path id="circ" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/></defs><text><textPath href="#circ">MIRROR STEEL ✦ DRAGON HILT ✦ WALNUT PLAQUE ✦ </textPath></text></svg>
+        <span>✦</span>
+      </div>
+    </section>
+
+    <!-- MARQUEE -->
+    <section class="marquee" aria-label="Highlights">
+      <div class="marquee__track">
+        <span>Mirror-polished steel</span><i>✦</i><span>Dragon-forged hilt</span><i>✦</i><span>Walnut wall plaque</span><i>✦</i><span>Tribal etching, both sides</span><i>✦</i><span>Ready to hang</span><i>✦</i><span>Pan-India delivery</span><i>✦</i>
+        <span>Mirror-polished steel</span><i>✦</i><span>Dragon-forged hilt</span><i>✦</i><span>Walnut wall plaque</span><i>✦</i><span>Tribal etching, both sides</span><i>✦</i><span>Ready to hang</span><i>✦</i><span>Pan-India delivery</span><i>✦</i>
+      </div>
+    </section>
+
+    <!-- STORY -->
+    <section class="story" id="story" data-stage="story">
+      <div class="story__inner">
+        <p class="eyebrow">More than a sword</p>
+        <p class="story__text" data-words>Some pieces decorate a wall. <em>This one commands it.</em> Mirror steel, a dragon-headed hilt and a dark walnut plaque — a collector's centrepiece built to hold the whole room.</p>
+        <div class="story__stats">
+          <div><b data-count="95">0</b><span>cm of steel &amp; dragon</span></div>
+          <div><b data-count="104">0</b><span>cm walnut plaque</span></div>
+          <div><b data-count="9">0</b><span>turns of gold coil</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANATOMY (sticky 3D tour) -->
+    <section class="anatomy" id="anatomy" data-stage="anatomy">
+      <div class="anatomy__sticky">
+        <div class="anatomy__head">
+          <p class="eyebrow">Anatomy of a legend</p>
+          <div class="anatomy__progress"><i id="anatomyBar"></i></div>
+        </div>
+        <div class="anatomy__cards" id="anatomyCards">
+          <article class="acard" data-step="0">
+            <span class="acard__num">01 / 06</span>
+            <h3>Dragon-head pommel</h3>
+            <p>Die-cast metal in antique copper with a dark wash. Red accents settle into every recess, and the horns sweep back as if mid-roar.</p>
+            <span class="chip">8.5 cm</span>
+          </article>
+          <article class="acard" data-step="1">
+            <span class="acard__num">02 / 06</span>
+            <h3>Gold-coil grip</h3>
+            <p>A dark sleeve wrapped in roughly nine turns of twisted gold-tone wire — tight, firm and catching light at every turn.</p>
+            <span class="chip">9–10 cm</span>
+          </article>
+          <article class="acard" data-step="2">
+            <span class="acard__num">03 / 06</span>
+            <h3>Dragon-wing guard</h3>
+            <p>Sculpted wings spanning 18 cm, finished in the same antique copper, with two round amber cabochon eyes watching the room.</p>
+            <span class="chip">18 cm span</span>
+          </article>
+          <article class="acard" data-step="3">
+            <span class="acard__num">04 / 06</span>
+            <h3>Tribal etching</h3>
+            <p>A one-piece laser-cut silhouette — twin cut-outs, then side spikes — etched with sharp black tribal patterns on both sides.</p>
+            <span class="chip">20 cm etched</span>
+          </article>
+          <article class="acard" data-step="4">
+            <span class="acard__num">05 / 06</span>
+            <h3>Mirror blade</h3>
+            <p>69 cm of mirror-polished stainless steel. Blunt, unsharpened edges and a rounded tip — made for display, not combat.</p>
+            <span class="chip">69 cm blade</span>
+          </article>
+          <article class="acard" data-step="5">
+            <span class="acard__num">06 / 06</span>
+            <h3>Walnut wall plaque</h3>
+            <p>Dark walnut finish with a satin lacquer and white tribal prints. Brass pegs and a tip cup hold the sword; keyhole slots, screws and wall plugs handle the rest.</p>
+            <span class="chip">104 cm tall</span>
+          </article>
+        </div>
+        <ol class="anatomy__dots" id="anatomyDots" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+      </div>
+    </section>
+
+    <!-- 3D VIEWER -->
+    <section class="viewer" id="viewer" data-stage="viewer">
+      <div class="viewer__glow" id="viewerGlow" aria-hidden="true"></div>
+      <div class="viewer__sticky" id="viewerArea">
+        <div class="viewer__head">
+          <p class="eyebrow">Interactive 3D</p>
+          <h2 class="h2">Turn it in <em>your hands.</em></h2>
+        </div>
+        <div class="viewer__hint" id="viewerHint"><span class="viewer__hand">↔</span> Drag to rotate</div>
+        <div class="viewer__controls">
+          <div class="seg" role="group" aria-label="Display">
+            <button class="seg__btn is-active" data-sep="0">Mounted</button>
+            <button class="seg__btn" data-sep="1">Apart</button>
+          </div>
+          <div class="seg" role="group" aria-label="Lighting">
+            <button class="seg__btn is-active" data-warm="0">Studio</button>
+            <button class="seg__btn" data-warm="1">Golden hour</button>
+          </div>
+          <button class="viewer__reset" id="viewerReset" aria-label="Reset view">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg>
+          </button>
+        </div>
+        <p class="viewer__note">3D model is an illustrative render. See the <a href="#buy" data-scroll>studio photos</a> for the actual piece.</p>
+      </div>
+    </section>
+
+    <!-- DIMENSIONS -->
+    <section class="dims" id="dimensions">
+      <div class="container dims__grid">
+        <div class="dims__art">
+          <svg id="blueprint" class="blueprint" role="img" aria-label="Technical drawing of the sword and plaque with dimensions"></svg>
+        </div>
+        <div class="dims__info">
+          <p class="eyebrow">Built to proportion</p>
+          <h2 class="h2">Every measure, <em>considered.</em></h2>
+          <p class="lead">A full-length piece with real presence. Here is exactly how much wall it claims.</p>
+          <dl class="spec">
+            <div><dt>Sword, overall</dt><dd><b data-count="95">0</b> cm</dd></div>
+            <div><dt>Blade length</dt><dd><b data-count="69">0</b> cm</dd></div>
+            <div><dt>Hilt (pommel + grip + guard)</dt><dd><b data-count="27">0</b> cm</dd></div>
+            <div><dt>Guard span</dt><dd><b data-count="18">0</b> cm</dd></div>
+            <div><dt>Plaque height</dt><dd><b data-count="104">0</b> cm</dd></div>
+            <div><dt>Plaque width (top / waist / base)</dt><dd>23 / 17.5 / 22 cm</dd></div>
+            <div><dt>Plaque thickness</dt><dd>18–20 mm</dd></div>
+            <div><dt>Blade thickness</dt><dd>3–4 mm</dd></div>
+          </dl>
+          <p class="fine">Dimensions are approximate (±10%) — each piece is hand-finished.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- MATERIALS BENTO -->
+    <section class="materials" id="materials">
+      <div class="container">
+        <div class="section-head">
+          <p class="eyebrow">Materials &amp; finish</p>
+          <h2 class="h2">Four materials. <em>One presence.</em></h2>
+        </div>
+        <div class="bento">
+          <article class="tile tile--img tile--tall tilt">
+            <img src="/images/closeup-guard.webp" alt="Close-up of the dragon-wing guard and gold coil grip" loading="lazy" />
+            <div class="tile__body"><span class="chip chip--light">Hilt</span><h3>Antique copper dragon</h3><p>Die-cast pommel and guard with dark wash, red accents and amber eyes.</p></div>
+          </article>
+          <article class="tile tile--steel tilt">
+            <div class="tile__shine" aria-hidden="true"></div>
+            <div class="tile__body"><span class="chip">Blade</span><h3>Stainless steel, mirror-polished</h3><p>Laser-cut in one piece with a full tang into the hilt, black-etched on both sides, finished with an anti-rust oil coat.</p></div>
+          </article>
+          <article class="tile tile--wood tilt">
+            <div class="tile__body"><span class="chip chip--light">Plaque</span><h3>Dark walnut finish</h3><p>Satin lacquered, with crisp white tribal prints.</p></div>
+          </article>
+          <article class="tile tile--img tilt">
+            <img src="/images/detail-hilt.webp" alt="Studio photo of the hilt mounted on the plaque" loading="lazy" />
+            <div class="tile__body"><span class="chip chip--light">Studio photo</span><h3>Brass pegs &amp; tip cup</h3><p>The sword rests centred, hilt over the top prints.</p></div>
+          </article>
+          <article class="tile tile--gold tilt">
+            <div class="tile__body"><span class="chip">Grip</span><h3>Gold-tone twisted wire</h3><p>Spiralled over a dark sleeve, firm and never loose.</p></div>
+            <div class="coil" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY (horizontal) -->
+    <section class="gallery" id="gallery">
+      <div class="gallery__pin">
+        <div class="gallery__head container">
+          <p class="eyebrow">On the wall</p>
+          <h2 class="h2">Wherever it hangs, <em>it leads.</em></h2>
+        </div>
+        <div class="gallery__track" id="galleryTrack">
+          <figure class="gcard" data-lightbox="/images/poster-sunlit.webp"><img src="/images/poster-sunlit.webp" alt="Sword plaque in warm window light" loading="lazy" /><figcaption>Sunlit study</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-lounge.webp"><img src="/images/scene-lounge.webp" alt="Sword plaque in a lounge" loading="lazy" /><figcaption>The lounge</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/scene-candle.webp"><img src="/images/scene-candle.webp" alt="Sword resting on old books by candlelight" loading="lazy" /><figcaption>By candlelight</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-library.webp"><img src="/images/scene-library.webp" alt="Sword plaque on a green library wall" loading="lazy" /><figcaption>The library</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/poster-grey.webp"><img src="/images/poster-grey.webp" alt="Sword plaque on a grey wall" loading="lazy" /><figcaption>Gallery grey</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/scene-ember.webp"><img src="/images/scene-ember.webp" alt="Sword plaque on dark stone with a red ring" loading="lazy" /><figcaption>Ember</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/scene-lantern.webp"><img src="/images/scene-lantern.webp" alt="Sword plaque beside a lantern" loading="lazy" /><figcaption>Lantern hall</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-dusk.webp"><img src="/images/scene-dusk.webp" alt="Sword plaque at dusk beside a red curtain" loading="lazy" /><figcaption>Dusk</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-stone.webp"><img src="/images/scene-stone.webp" alt="Sword plaque on a stone ledge" loading="lazy" /><figcaption>Stone ledge</figcaption></figure>
+          <div class="gcard gcard--cta">
+            <p>See it move</p>
+            <a class="btn btn--ghost" data-reel target="_blank" rel="noopener">Watch the reel ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUY -->
+    <section class="buy" id="buy">
+      <div class="container buy__grid">
+        <div class="buy__media">
+          <div class="buy__main" id="buyMain">
+            <img src="/images/studio-mounted.webp" alt="The Warrior Sword mounted on its walnut plaque — studio photo" id="buyMainImg" />
+            <span class="buy__tag">Studio photo</span>
+          </div>
+          <div class="buy__thumbs" id="buyThumbs">
+            <button class="is-active" data-src="/images/studio-mounted.webp" aria-label="Mounted, front"><img src="/images/studio-mounted.webp" alt="" /></button>
+            <button data-src="/images/studio-apart.webp" aria-label="Sword and plaque side by side"><img src="/images/studio-apart.webp" alt="" /></button>
+            <button data-src="/images/detail-hilt.webp" aria-label="Hilt and etching detail"><img src="/images/detail-hilt.webp" alt="" /></button>
+            <button data-src="/images/poster-sunlit.webp" aria-label="On a sunlit wall"><img src="/images/poster-sunlit.webp" alt="" /></button>
+          </div>
+        </div>
+        <div class="buy__info">
+          <p class="eyebrow">Collector's Series · No. 01</p>
+          <h2 class="buy__title">The Warrior Sword</h2>
+          <p class="buy__subtitle">Fantasy dragon display sword with walnut wall plaque</p>
+          <div class="buy__price"><span data-price></span><small>Inclusive of all taxes</small></div>
+          <p class="buy__desc">A full-metal decorative sword — mirror-polished stainless blade, antique-copper dragon hilt with a gold coil grip — supplied with a 104 cm dark walnut wall plaque. Arrives ready to hang.</p>
+
+          <div class="buy__row">
+            <div class="qty" aria-label="Quantity">
+              <button data-qty="-1" aria-label="Decrease">−</button>
+              <output id="qtyVal">1</output>
+              <button data-qty="1" aria-label="Increase">+</button>
+            </div>
+            <button class="btn btn--dark btn--block magnetic" id="addBtn"><span>Add to cart</span></button>
+          </div>
+          <button class="btn btn--copper btn--block" id="buyNowBtn"><span>Buy it now</span></button>
+
+          <ul class="perks">
+            <li><svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6z"/></svg><span><b>Display-safe</b> blunt edge, rounded tip</span></li>
+            <li><svg viewBox="0 0 24 24"><path d="M3 7h13v10H3zM16 10h3l2 3v4h-5"/><circle cx="7" cy="18" r="1.6"/><circle cx="18" cy="18" r="1.6"/></svg><span><b>Pan-India delivery</b> available</span></li>
+            <li><svg viewBox="0 0 24 24"><path d="M4 8h16v12H4zM2 4h20v4H2zM12 8v12"/></svg><span><b>Wall-mount kit</b> included</span></li>
+          </ul>
+
+          <div class="acc" data-acc>
+            <details open>
+              <summary>What's in the box</summary>
+              <ul class="box-list">
+                <li>Display sword, approx. 95 cm (blunt edge)</li>
+                <li>Dark walnut wall plaque, approx. 104 cm</li>
+                <li>2 brass pegs + metal tip cup (fitted on plaque)</li>
+                <li>Screws &amp; wall plugs for the 2 keyhole slots on the back</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Specifications</summary>
+              <ul class="box-list">
+                <li>Blade: stainless steel, 3–4 mm, mirror polish, black etching both sides</li>
+                <li>Pommel &amp; guard: die-cast metal, antique copper / bronze finish</li>
+                <li>Grip: dark sleeve with gold-tone twisted wire spiral</li>
+                <li>Guard eyes: amber / gold cabochons</li>
+                <li>Plaque: walnut-finish wood, satin lacquer, white tribal print</li>
+              </ul>
+            </details>
+            <details>
+              <summary>Care</summary>
+              <p>Wipe the blade with a soft dry cloth; a drop of light machine oil now and then keeps the mirror finish bright. Avoid damp walls and direct moisture. Dust the plaque with a dry cloth.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <div class="container faq__grid">
+        <div>
+          <p class="eyebrow">Questions</p>
+          <h2 class="h2">Before you <em>claim it.</em></h2>
+          <p class="lead">Anything else? Message us and we'll help you out.</p>
+        </div>
+        <div class="acc acc--faq" data-acc>
+          <details><summary>Is the sword sharp?</summary><p>No. It is a decorative display piece — the edges are blunt and unsharpened and the tip is slightly rounded. It is not a functional weapon.</p></details>
+          <details><summary>Is it real metal?</summary><p>Yes. The blade is stainless steel with a mirror polish, and the dragon pommel and guard are die-cast metal with an antique copper finish.</p></details>
+          <details><summary>How do I hang it?</summary><p>The plaque has two keyhole slots on the back. Screws and wall plugs are included — fix two screws to the wall, slide the plaque on, then rest the sword on the brass pegs with the tip in the cup.</p></details>
+          <details><summary>How much wall space does it need?</summary><p>Plan for about 110 cm of height and 25 cm of width. The plaque itself is roughly 104 cm tall and 23 cm wide at the top.</p></details>
+          <details><summary>Can I take the sword off the plaque?</summary><p>Yes — the sword simply rests on the pegs and tip cup, so you can lift it off to dust it or display it on its own.</p></details>
+          <details><summary>Do you deliver across India?</summary><p>Yes — pan-India delivery is available. We deliver across India; once your order is confirmed we'll share dispatch and tracking details with you.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="final" id="final">
+      <div class="final__beam" aria-hidden="true"></div>
+      <p class="eyebrow">For collectors · for dreamers · for warriors at heart</p>
+      <h2 class="final__title" data-split>Claim your legend.</h2>
+      <div class="final__row">
+        <span class="final__price" data-price></span>
+        <button class="btn btn--dark btn--lg magnetic" data-add-to-cart><span>Add to cart</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div>
+        <a href="#top" class="nav__logo" data-scroll><span class="nav__logo-mark">✦</span><span>WARRIOR</span></a>
+        <p class="footer__tag">A collector's wall piece for those who value heritage, detail and power.</p>
+      </div>
+      <div class="footer__cols">
+        <div><h4>Explore</h4><a href="#anatomy" data-scroll>Anatomy</a><a href="#viewer" data-scroll>3D view</a><a href="#gallery" data-scroll>Gallery</a></div>
+        <div><h4>Shop</h4><a href="#buy" data-scroll>Buy now</a><a href="#dimensions" data-scroll>Dimensions</a><a href="#faq" data-scroll>FAQ</a></div>
+        <div><h4>Follow</h4><a data-reel target="_blank" rel="noopener">Instagram reel ↗</a></div>
+      </div>
+    </div>
+    <div class="container footer__base">
+      <span>© <span id="year"></span> The Warrior Sword</span>
+      <span>Pan-India delivery · Decorative display item, not a weapon</span>
+    </div>
+    <div class="footer__mega" aria-hidden="true">WARRIOR</div>
+  </footer>
+
+  <!-- sticky mobile buy bar -->
+  <div class="buybar" id="buybar">
+    <div><b>The Warrior Sword</b><span data-price></span></div>
+    <button class="btn btn--dark btn--sm" data-add-to-cart>Add to cart</button>
+  </div>
+
+  <!-- cart drawer -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer" aria-label="Cart" aria-hidden="true">
+    <div class="drawer__head">
+      <h3>Your cart</h3>
+      <button class="icon-btn" data-close-drawer aria-label="Close cart">✕</button>
+    </div>
+    <div class="drawer__body" id="cartBody"></div>
+    <div class="drawer__foot" id="cartFoot">
+      <div class="sumrow"><span>Subtotal</span><b id="cartSubtotal"></b></div>
+      <div class="sumrow sumrow--muted"><span>Shipping</span><span id="cartShipping"></span></div>
+      <button class="btn btn--dark btn--block" id="checkoutBtn"><span>Checkout</span></button>
+      <p class="fine center">Pan-India delivery · Cash on delivery &amp; UPI</p>
+    </div>
+  </aside>
+
+  <!-- checkout -->
+  <div class="modal" id="checkout" aria-hidden="true" role="dialog" aria-label="Checkout">
+    <div class="modal__panel">
+      <button class="icon-btn modal__close" data-close-modal aria-label="Close checkout">✕</button>
+      <div class="checkout" id="checkoutForm">
+        <form id="orderForm" novalidate>
+          <h3>Checkout</h3>
+          <fieldset>
+            <legend>Contact</legend>
+            <label class="field"><span>Full name</span><input name="name" autocomplete="name" required /></label>
+            <div class="field-row">
+              <label class="field"><span>Mobile number</span><input name="phone" inputmode="tel" autocomplete="tel" required pattern="[6-9][0-9]{9}" maxlength="10" placeholder="10-digit number" /></label>
+              <label class="field"><span>Email <i>(optional)</i></span><input name="email" type="email" autocomplete="email" /></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Delivery address</legend>
+            <label class="field"><span>House / flat, street, area</span><input name="address" autocomplete="street-address" required /></label>
+            <div class="field-row field-row--3">
+              <label class="field"><span>City</span><input name="city" autocomplete="address-level2" required /></label>
+              <label class="field"><span>State</span><select name="state" required id="stateSelect"><option value="">Select</option></select></label>
+              <label class="field"><span>PIN code</span><input name="pin" inputmode="numeric" autocomplete="postal-code" required pattern="[1-9][0-9]{5}" maxlength="6" /></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Payment</legend>
+            <div class="pay">
+              <label class="pay__opt"><input type="radio" name="payment" value="Cash on Delivery" checked /><span><b>Cash on delivery</b><small>Pay when it arrives</small></span></label>
+              <label class="pay__opt"><input type="radio" name="payment" value="UPI" /><span><b>UPI</b><small>We'll send a payment request</small></span></label>
+            </div>
+          </fieldset>
+          <p class="form-error" id="formError" role="alert"></p>
+        </form>
+        <aside class="summary">
+          <h4>Order summary</h4>
+          <div id="summaryItems"></div>
+          <div class="sumrow"><span>Subtotal</span><span id="sumSubtotal"></span></div>
+          <div class="sumrow"><span>Shipping</span><span id="sumShipping"></span></div>
+          <div class="sumrow sumrow--total"><span>Total</span><b id="sumTotal"></b></div>
+          <button class="btn btn--dark btn--block" type="submit" form="orderForm" id="placeOrder"><span>Place order</span></button>
+        </aside>
+      </div>
+      <div class="success" id="success" hidden>
+        <div class="success__seal">✦</div>
+        <h3>Your legend is claimed.</h3>
+        <p>Order <b id="orderId"></b> has been received. We'll call or message you on <b id="orderPhone"></b> to confirm.</p>
+        <a class="btn btn--dark" id="waLink" target="_blank" rel="noopener" hidden><span>Send order on WhatsApp</span></a>
+        <button class="btn btn--ghost" data-close-modal><span>Back to the store</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="icon-btn lightbox__close" aria-label="Close">✕</button>
+    <img alt="" id="lightboxImg" />
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
