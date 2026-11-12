@@ -1,7 +1,7 @@
 // Technical drawing generated from the exact outlines used by the 3D model.
 import {
   bladeHalfOutline, guardHalfOutline, pommelHalfOutline, plaqueHalfOutline, gripSpan, mirror, TIP_ON_PLAQUE,
-} from './three/model.js';
+} from './three/outline.js';
 
 const TOP = 110; // svg y = TOP - y(cm)
 const T = TIP_ON_PLAQUE;

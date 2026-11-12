@@ -9,74 +9,17 @@
 import * as THREE from 'three';
 import { photoSampler, sculptedPart, etchTexture } from './sculpt.js';
 
-const V = (x, y) => new THREE.Vector2(x, y);
+// Outlines + calibration live in outline.js (shared with the blueprint drawing).
+import {
+  PHOTO, TIP_ON_PLAQUE, BLADE_PX, GUARD_PX, POMMEL_PX, GRIP_PX,
+  bladeHalfOutline, guardHalfOutline, pommelHalfOutline, gripSpan, plaqueY, plaqueHalfOutline, mirror,
+} from './outline.js';
 
-/* ------------------------------------------------ photo → cm calibration */
-export const PHOTO = {
-  url: '/textures/product-ref.webp',
-  W: 1086, H: 1448,
-  AX: 732.5,          // sword / plaque centre line (px)
-  TIP: 1255,          // blade tip (px)
-  SX: 18 / 236,       // sword cm per px, horizontal (guard span = 18 cm)
-  SY: 95 / 1123,      // sword cm per px, vertical (crest → tip = 95 cm)
-  PLAQUE_BOTTOM: 1315,
-  PSX: 23 / 320,      // plaque cm per px, horizontal (top width = 23 cm)
-  PSY: 104 / 1207,    // plaque cm per px, vertical (height = 104 cm)
+export {
+  PHOTO, TIP_ON_PLAQUE, bladeHalfOutline, guardHalfOutline, pommelHalfOutline, gripSpan, plaqueY, plaqueHalfOutline, mirror,
 };
-export const TIP_ON_PLAQUE = (PHOTO.PLAQUE_BOTTOM - PHOTO.TIP) * PHOTO.PSY; // ≈ 5.2 cm
 
-// traced right halves: [dx px from centre line, y px]
-const BLADE_PX = [
-  [0, 492], [36, 494], [46.3, 516.7], [53, 541.7], [41.3, 539.3], [29.7, 546.7], [27.3, 558.3], [31.3, 570],
-  [44.7, 577.3], [53, 580], [41.3, 588.3], [38, 603.3], [38.7, 633.3], [43, 647.3], [84.7, 601.7], [86.7, 616.7],
-  [83, 650], [75.3, 689.3], [68, 677.3], [56.3, 693.3], [48, 720], [44.7, 743.3], [51.3, 751.7], [39.7, 768.3],
-  [30.5, 800], [28.5, 850], [29.5, 900], [29.8, 1000], [29, 1100], [25, 1150], [18.5, 1200], [10, 1232], [0, 1255],
-];
-const GUARD_PX = [
-  [0, 398], [23, 410], [43, 423.3], [70, 410], [86.5, 391.7], [98, 406.7], [106.5, 431.7], [116.5, 445], [118, 460],
-  [115, 493.3], [106.5, 533.3], [96.5, 573.3], [90, 546.7], [85, 516.7], [76.5, 493.3], [63, 485], [43, 485],
-  [30, 491.7], [13, 506.7], [0, 523.3],
-];
-const POMMEL_PX = [
-  [0, 146], [8.3, 150], [14, 160], [18.3, 131.7], [22.7, 146.7], [21.7, 170], [35, 176.7], [36.7, 193.3],
-  [30, 203.3], [31.7, 230], [28.3, 246.7], [18.3, 253.3], [0, 256],
-];
-const GRIP_PX = { top: 252, bottom: 402, half: 21 };
-
-const toSword = ([dx, y]) => V(dx * PHOTO.SX, (PHOTO.TIP - y) * PHOTO.SY);
-
-// Right-half outlines in sword space (cm, tip at y = 0).
-export const bladeHalfOutline = () => BLADE_PX.map(toSword);
-export const guardHalfOutline = () => GUARD_PX.map(toSword);
-export const pommelHalfOutline = () => POMMEL_PX.map(toSword);
-export const gripSpan = () => ({
-  y0: (PHOTO.TIP - GRIP_PX.bottom) * PHOTO.SY,
-  y1: (PHOTO.TIP - GRIP_PX.top) * PHOTO.SY,
-  r: GRIP_PX.half * PHOTO.SX,
-});
-
-// Plaque, built to the spec widths with heights read off the photo.
-export const plaqueY = (p) => (PHOTO.PLAQUE_BOTTOM - p) * PHOTO.PSY;
-export function plaqueHalfOutline() {
-  const J = 11.5, K = 8.75, L = 11, py = plaqueY;
-  const p = new THREE.Path();
-  p.moveTo(0, 0);
-  p.quadraticCurveTo(4.5, 0.15, 8.0, py(1275)); // shallow arched bottom
-  p.quadraticCurveTo(8.0, py(1230), L, py(1230)); // notched bottom corner
-  p.lineTo(L, py(1065));
-  p.quadraticCurveTo(K, py(1065), K, py(1040)); // step into the waist
-  p.lineTo(K, py(600));
-  p.quadraticCurveTo(K, py(575), J, py(575)); // step out to the top section
-  p.lineTo(J, py(200));
-  p.quadraticCurveTo(8.3, py(200), 8.3, py(150)); // notched top corner
-  p.quadraticCurveTo(4.6, 104.1, 0, 104); // arched top
-  return p.getPoints(14);
-}
-
-export function mirror(half) {
-  const left = half.slice(1, -1).reverse().map((v) => V(-v.x, v.y));
-  return [...half, ...left];
-}
+const V = (x, y) => new THREE.Vector2(x, y);
 
 /* ------------------------------------------------------------- textures */
 function loadImage(url) {
@@ -192,7 +135,7 @@ function materials(etchTex, plaqueTex) {
     gold: new THREE.MeshStandardMaterial({ color: 0xd9a958, metalness: 1, roughness: 0.22 }),
     grip: new THREE.MeshPhysicalMaterial({ color: 0x5a1a10, metalness: 0.55, roughness: 0.22, clearcoat: 1 }),
     steelRing: new THREE.MeshStandardMaterial({ color: 0xb9bcc0, metalness: 1, roughness: 0.2 }),
-    amber: new THREE.MeshPhysicalMaterial({ color: 0xf2c46a, emissive: 0x5a3305, emissiveIntensity: 0.5, roughness: 0.06, metalness: 0, clearcoat: 1, transmission: 0.25, thickness: 0.5 }),
+    amber: new THREE.MeshPhysicalMaterial({ color: 0xf2c46a, emissive: 0x5a3305, emissiveIntensity: 0.5, roughness: 0.06, metalness: 0, clearcoat: 1 }), // no transmission: it costs a full extra scene pass every frame
     ruby: new THREE.MeshPhysicalMaterial({ color: 0xb3121d, emissive: 0x420306, emissiveIntensity: 0.7, roughness: 0.05, clearcoat: 1, flatShading: true }),
     walnut: new THREE.MeshStandardMaterial({ map: plaqueTex, roughness: 0.62, metalness: 0, envMapIntensity: 0.45 }),
     walnutSide: new THREE.MeshStandardMaterial({ color: 0x3a2118, roughness: 0.55 }),
@@ -306,8 +249,13 @@ export const SWORD_Z = 3.4;
 export const PRODUCT_CENTER_Y = 52;
 
 export async function buildProduct(renderer, quality = 1) {
+  // Each heavy step runs in its own task so the loader keeps animating on slow phones.
+  const yieldToBrowser = () => new Promise((r) => setTimeout(r, 0));
   const img = await loadImage(PHOTO.url);
-  const m = materials(etchTexture(img, renderer, PHOTO, BLADE_PX, quality), plaqueTexture(img, renderer, quality));
+  const etch = etchTexture(img, renderer, PHOTO, BLADE_PX, quality);
+  await yieldToBrowser();
+  const m = materials(etch, plaqueTexture(img, renderer, quality));
+  await yieldToBrowser();
 
   const inner = new THREE.Group();
   inner.position.y = -PRODUCT_CENTER_Y;
@@ -316,6 +264,7 @@ export async function buildProduct(renderer, quality = 1) {
   const swordPivot = new THREE.Group(); // animated when the sword comes off the wall
   swordPivot.position.set(0, TIP_ON_PLAQUE, SWORD_Z);
   const sample = photoSampler(img);
+  await yieldToBrowser();
   const swordSample = (x, y) => sample(PHOTO.AX + x / PHOTO.SX, PHOTO.TIP - y / PHOTO.SY);
   swordPivot.add(buildSword(m, swordSample, quality));
   inner.add(swordPivot);

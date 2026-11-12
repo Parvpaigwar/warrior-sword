@@ -3,20 +3,18 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildProduct, TIP_ON_PLAQUE, SWORD_Z } from './model.js';
+import { DEFAULT_STATE } from './state.js';
 
-export const DEFAULT_STATE = {
-  fx: 0, fy: 52, fz: 0, // focus point on the product (cm, product space)
-  dist: 7.5,            // camera distance (world units)
-  rotX: 0, rotY: 0,     // product rotation
-  nx: 0, ny: 0,         // where the focus sits on screen (-1..1)
-  sep: 0,               // 0 mounted → 1 sword lifted off the plaque
-  warm: 0,              // 0 studio light → 1 golden hour
-  opacity: 1,
-};
+export { DEFAULT_STATE };
 
 export async function createStage(canvas, { mobile }) {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1.75 : 2));
+  // Full pixel ratio on capable GPUs; the frame-time governor below only steps it
+  // down on devices that genuinely can't keep up (and steps back up when they can).
+  const maxDpr = Math.min(window.devicePixelRatio, mobile ? 1.75 : 2);
+  const minDpr = Math.min(maxDpr, 1);
+  let dpr = maxDpr;
+  renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.12;
@@ -70,6 +68,21 @@ export async function createStage(canvas, { mobile }) {
   resize();
   window.addEventListener('resize', resize);
 
+  // Compile every shader up front without blocking the main thread
+  // (KHR_parallel_shader_compile), so the first frames and the intro stay smooth.
+  try { await renderer.compileAsync(scene, camera); } catch { /* falls back to lazy compile */ }
+
+  // adaptive resolution governor
+  let acc = 0, frames = 0, slowWindows = 0, fastWindows = 0;
+  function govern(dt) {
+    acc += dt; frames++;
+    if (frames < 45) return;
+    const avg = acc / frames; acc = 0; frames = 0;
+    if (avg > 0.024) { fastWindows = 0; if (++slowWindows >= 2 && dpr > minDpr) { dpr = Math.max(minDpr, dpr - 0.25); renderer.setPixelRatio(dpr); resize(); slowWindows = 0; } }
+    else if (avg < 0.0175) { slowWindows = 0; if (++fastWindows >= 6 && dpr < maxDpr) { dpr = Math.min(maxDpr, dpr + 0.25); renderer.setPixelRatio(dpr); resize(); fastWindows = 0; } }
+    else { slowWindows = 0; fastWindows = 0; }
+  }
+
   const focusLocal = new THREE.Vector3();
   const focusWorld = new THREE.Vector3();
   const tmp = new THREE.Vector3();
@@ -105,7 +118,8 @@ export async function createStage(canvas, { mobile }) {
   const listeners = [];
   function loop(now) {
     if (!running) return;
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const raw = (now - last) / 1000;
+    const dt = Math.min(0.05, raw);
     last = now;
     const k = 1 - Math.exp(-dt * 5.5);
     for (const key2 in target) current[key2] += (target[key2] - current[key2]) * k;
@@ -113,6 +127,7 @@ export async function createStage(canvas, { mobile }) {
     if (current.opacity > 0.002) {
       apply(now / 1000);
       renderer.render(scene, camera);
+      if (raw < 0.25) govern(raw); // ignore tab switches / hitches
     } else {
       canvas.style.opacity = '0';
     }

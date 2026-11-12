@@ -4,7 +4,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { STORE, fmt } from './config.js';
 import { initCart } from './cart.js';
 import { drawBlueprint } from './blueprint.js';
-import { createStage, DEFAULT_STATE } from './three/stage.js';
+import { DEFAULT_STATE } from './three/state.js';
+// three.js + the model load as a separate chunk, in parallel with the page UI
+const stageModule = import('./three/stage.js');
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,6 +43,16 @@ function scrollToTarget(sel) {
   else el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
 }
 
+/* ------------------------------------------------------------ pause off-screen loops */
+// Infinite CSS animations (beams, badge, marquee, shine, coil…) keep costing
+// frames even when nobody can see them — freeze them while their section is away.
+if ('IntersectionObserver' in window) {
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => e.target.classList.toggle('is-offscreen', !e.isIntersecting));
+  }, { rootMargin: '100px 0px' });
+  $$('main > section').forEach((s) => io.observe(s));
+}
+
 /* ------------------------------------------------------------ cart */
 initCart({ lockScroll, unlockScroll });
 
@@ -69,10 +81,9 @@ function onScrollUI(y) {
   const goingDown = y > lastY && y > window.innerHeight * 0.8;
   if (!menu.classList.contains('is-open')) nav.classList.toggle('is-hidden', goingDown && Math.abs(y - lastY) > 2);
   lastY = y;
-  const buy = $('#buy').getBoundingClientRect();
-  const fin = $('#final').getBoundingClientRect();
-  const nearBuy = buy.top < window.innerHeight && buy.bottom > 0;
-  const nearFinal = fin.top < window.innerHeight;
+  const vh = window.innerHeight;
+  const nearBuy = y + vh > buyRange[0] && y < buyRange[1];
+  const nearFinal = y + vh > finalTop;
   const inTour = (y > anatomyRange[0] - 50 && y < anatomyRange[1] + 50) || (y > viewerRange[0] && y < viewerRange[1]);
   buybar.classList.toggle('is-visible', y > window.innerHeight * 0.7 && !nearBuy && !nearFinal && !inTour);
 }
@@ -120,9 +131,14 @@ function viewerState() {
 let keyframes = [];
 let viewerRange = [0, 0];
 let anatomyRange = [0, 1];
+let buyRange = [0, 0];
+let finalTop = Infinity;
 function measure() {
   const vh = window.innerHeight;
   const top = (el) => el.getBoundingClientRect().top + window.scrollY;
+  const buyEl = $('#buy');
+  buyRange = [top(buyEl), top(buyEl) + buyEl.offsetHeight];
+  finalTop = top($('#final'));
   const story = $('#story'), an = $('#anatomy'), vw = $('#viewer');
   const aTop = top(an), aEnd = aTop + an.offsetHeight - vh;
   const vTop = top(vw), vEnd = vTop + vw.offsetHeight - vh;
@@ -328,11 +344,15 @@ function splitWords(el) {
 function setupAnimations() {
   // story words light up as you read
   const words = splitWords($('[data-words]'));
+  let litWords = words.length; // all words start fully visible until the trigger updates
   ScrollTrigger.create({
     trigger: '#story', start: 'top 70%', end: 'bottom 60%', scrub: true,
     onUpdate: (st) => {
-      const n = Math.floor(st.progress * words.length * 1.15);
-      words.forEach((w, i) => (w.style.opacity = i < n ? 1 : 0.12));
+      const n = Math.min(words.length, Math.floor(st.progress * words.length * 1.15));
+      if (n === litWords) return;
+      const [a, b] = n > litWords ? [litWords, n] : [n, litWords];
+      for (let i = a; i < b; i++) words[i].style.opacity = i < n ? 1 : 0.12;
+      litWords = n;
     },
   });
 
@@ -393,9 +413,13 @@ function setupAnimations() {
 
   // marquee speeds up with scroll velocity
   const track = $('.marquee__track');
+  let marqueeDur = 32;
   ScrollTrigger.create({
     trigger: '.marquee', start: 'top bottom', end: 'bottom top',
-    onUpdate: (st) => { track.style.animationDuration = `${clamp(32 - Math.abs(st.getVelocity()) / 120, 10, 32)}s`; },
+    onUpdate: (st) => {
+      const d = Math.round(clamp(32 - Math.abs(st.getVelocity()) / 120, 10, 32));
+      if (d !== marqueeDur) { marqueeDur = d; track.style.animationDuration = `${d}s`; }
+    },
   });
 }
 
@@ -417,16 +441,15 @@ async function boot() {
   const bar = $('#loaderBar'), pct = $('#loaderPct');
   const setP = (p) => { bar.style.transform = `scaleX(${p})`; pct.textContent = String(Math.round(p * 100)).padStart(2, '0'); };
   setP(0.2);
+  // build the 3D scene while the fonts load (nothing on screen waits on the lazy photos)
+  const stageReady = stageModule.then(({ createStage }) => createStage($('#stage'), { mobile: isMobile() })).then(
+    (s) => { setP(0.85); return s; },
+    (err) => { webglFallback(err); return null; },
+  );
   await Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 2500))]);
   setP(0.55);
-  const imgs = $$('#buy img, .tile img').slice(0, 4).map((im) => (im.complete ? 0 : new Promise((r) => { im.onload = im.onerror = r; })));
-  await Promise.race([Promise.all(imgs), new Promise((r) => setTimeout(r, 2500))]);
-  setP(0.85);
-
-  try {
-    stage = await createStage($('#stage'), { mobile: isMobile() });
-    registerFrameHooks();
-  } catch (err) { stage = null; webglFallback(err); }
+  stage = await stageReady;
+  if (stage) registerFrameHooks();
   measure();
   if (stage) {
     // start offstage-ish so the model glides in

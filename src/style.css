@@ -113,7 +113,7 @@ em { font-style: italic; color: var(--copper); }
 /* ---------------- global layers ---------------- */
 .stage { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; opacity: 0; }
 .grain {
-  position: fixed; inset: -50%; z-index: 90; pointer-events: none; opacity: 0.05;
+  position: fixed; inset: -10%; z-index: 90; pointer-events: none; opacity: 0.05; will-change: transform;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 1s steps(4) infinite;
 }
@@ -173,7 +173,7 @@ em { font-style: italic; color: var(--copper); }
 .hero__light i {
   position: absolute; top: -20%; height: 150%; width: 14vw; transform: rotate(28deg);
   background: linear-gradient(90deg, rgba(255, 236, 205, 0) 0%, rgba(255, 232, 196, 0.55) 50%, rgba(255, 236, 205, 0) 100%);
-  filter: blur(18px); animation: beam 9s ease-in-out infinite;
+  filter: blur(18px); animation: beam 9s ease-in-out infinite; will-change: transform;
 }
 .hero__light i:nth-child(1) { left: 52%; }
 .hero__light i:nth-child(2) { left: 64%; width: 7vw; animation-delay: -3s; }
@@ -206,7 +206,7 @@ em { font-style: italic; color: var(--copper); }
 .hero__badge text { font-size: 9.4px; letter-spacing: 0.22em; fill: var(--ink-2); font-weight: 600; }
 
 /* split text */
-.split-char { display: inline-block; will-change: transform; }
+.split-char { display: inline-block; }
 .split-word { display: inline-block; overflow: hidden; vertical-align: top; }
 
 /* ---------------- marquee ---------------- */
@@ -567,3 +567,6 @@ legend { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; f
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+/* ---------------- performance: freeze looping decor while it's off screen ---------------- */
+.is-offscreen, .is-offscreen * { animation-play-state: paused !important; }

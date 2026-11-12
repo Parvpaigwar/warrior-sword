@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/src/style.css" />
+  <link rel="preload" as="image" type="image/webp" href="/textures/product-ref.webp" />
 </head>
 <body>
   <!-- loader -->
@@ -230,7 +231,7 @@
         </div>
         <div class="bento">
           <article class="tile tile--img tile--tall tilt">
-            <img src="/images/closeup-guard.webp" alt="Close-up of the dragon-wing guard and gold coil grip" loading="lazy" />
+            <img decoding="async" src="/images/closeup-guard.webp" alt="Close-up of the dragon-wing guard and gold coil grip" loading="lazy" />
             <div class="tile__body"><span class="chip chip--light">Hilt</span><h3>Antique copper dragon</h3><p>Die-cast pommel and guard with dark wash, red accents and amber eyes.</p></div>
           </article>
           <article class="tile tile--steel tilt">
@@ -241,7 +242,7 @@
             <div class="tile__body"><span class="chip chip--light">Plaque</span><h3>Dark walnut finish</h3><p>Satin lacquered, with crisp white tribal prints.</p></div>
           </article>
           <article class="tile tile--img tilt">
-            <img src="/images/detail-hilt.webp" alt="Studio photo of the hilt mounted on the plaque" loading="lazy" />
+            <img decoding="async" src="/images/detail-hilt.webp" alt="Studio photo of the hilt mounted on the plaque" loading="lazy" />
             <div class="tile__body"><span class="chip chip--light">Studio photo</span><h3>Brass pegs &amp; tip cup</h3><p>The sword rests centred, hilt over the top prints.</p></div>
           </article>
           <article class="tile tile--gold tilt">
@@ -260,15 +261,15 @@
           <h2 class="h2">Wherever it hangs, <em>it leads.</em></h2>
         </div>
         <div class="gallery__track" id="galleryTrack">
-          <figure class="gcard" data-lightbox="/images/poster-sunlit.webp"><img src="/images/poster-sunlit.webp" alt="Sword plaque in warm window light" loading="lazy" /><figcaption>Sunlit study</figcaption></figure>
-          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-lounge.webp"><img src="/images/scene-lounge.webp" alt="Sword plaque in a lounge" loading="lazy" /><figcaption>The lounge</figcaption></figure>
-          <figure class="gcard" data-lightbox="/images/scene-candle.webp"><img src="/images/scene-candle.webp" alt="Sword resting on old books by candlelight" loading="lazy" /><figcaption>By candlelight</figcaption></figure>
-          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-library.webp"><img src="/images/scene-library.webp" alt="Sword plaque on a green library wall" loading="lazy" /><figcaption>The library</figcaption></figure>
-          <figure class="gcard" data-lightbox="/images/poster-grey.webp"><img src="/images/poster-grey.webp" alt="Sword plaque on a grey wall" loading="lazy" /><figcaption>Gallery grey</figcaption></figure>
-          <figure class="gcard" data-lightbox="/images/scene-ember.webp"><img src="/images/scene-ember.webp" alt="Sword plaque on dark stone with a red ring" loading="lazy" /><figcaption>Ember</figcaption></figure>
-          <figure class="gcard" data-lightbox="/images/scene-lantern.webp"><img src="/images/scene-lantern.webp" alt="Sword plaque beside a lantern" loading="lazy" /><figcaption>Lantern hall</figcaption></figure>
-          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-dusk.webp"><img src="/images/scene-dusk.webp" alt="Sword plaque at dusk beside a red curtain" loading="lazy" /><figcaption>Dusk</figcaption></figure>
-          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-stone.webp"><img src="/images/scene-stone.webp" alt="Sword plaque on a stone ledge" loading="lazy" /><figcaption>Stone ledge</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/poster-sunlit.webp"><img decoding="async" src="/images/poster-sunlit.webp" alt="Sword plaque in warm window light" loading="lazy" /><figcaption>Sunlit study</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-lounge.webp"><img decoding="async" src="/images/scene-lounge.webp" alt="Sword plaque in a lounge" loading="lazy" /><figcaption>The lounge</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/scene-candle.webp"><img decoding="async" src="/images/scene-candle.webp" alt="Sword resting on old books by candlelight" loading="lazy" /><figcaption>By candlelight</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-library.webp"><img decoding="async" src="/images/scene-library.webp" alt="Sword plaque on a green library wall" loading="lazy" /><figcaption>The library</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/poster-grey.webp"><img decoding="async" src="/images/poster-grey.webp" alt="Sword plaque on a grey wall" loading="lazy" /><figcaption>Gallery grey</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/scene-ember.webp"><img decoding="async" src="/images/scene-ember.webp" alt="Sword plaque on dark stone with a red ring" loading="lazy" /><figcaption>Ember</figcaption></figure>
+          <figure class="gcard" data-lightbox="/images/scene-lantern.webp"><img decoding="async" src="/images/scene-lantern.webp" alt="Sword plaque beside a lantern" loading="lazy" /><figcaption>Lantern hall</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-dusk.webp"><img decoding="async" src="/images/scene-dusk.webp" alt="Sword plaque at dusk beside a red curtain" loading="lazy" /><figcaption>Dusk</figcaption></figure>
+          <figure class="gcard gcard--narrow" data-lightbox="/images/scene-stone.webp"><img decoding="async" src="/images/scene-stone.webp" alt="Sword plaque on a stone ledge" loading="lazy" /><figcaption>Stone ledge</figcaption></figure>
           <div class="gcard gcard--cta">
             <p>See it move</p>
             <a class="btn btn--ghost" data-reel target="_blank" rel="noopener">Watch the reel ↗</a>
@@ -282,14 +283,14 @@
       <div class="container buy__grid">
         <div class="buy__media">
           <div class="buy__main" id="buyMain">
-            <img src="/images/studio-mounted.webp" alt="The Warrior Sword mounted on its walnut plaque — studio photo" id="buyMainImg" />
+            <img decoding="async" src="/images/studio-mounted.webp" alt="The Warrior Sword mounted on its walnut plaque — studio photo" id="buyMainImg" />
             <span class="buy__tag">Studio photo</span>
           </div>
           <div class="buy__thumbs" id="buyThumbs">
-            <button class="is-active" data-src="/images/studio-mounted.webp" aria-label="Mounted, front"><img src="/images/studio-mounted.webp" alt="" /></button>
-            <button data-src="/images/studio-apart.webp" aria-label="Sword and plaque side by side"><img src="/images/studio-apart.webp" alt="" /></button>
-            <button data-src="/images/detail-hilt.webp" aria-label="Hilt and etching detail"><img src="/images/detail-hilt.webp" alt="" /></button>
-            <button data-src="/images/poster-sunlit.webp" aria-label="On a sunlit wall"><img src="/images/poster-sunlit.webp" alt="" /></button>
+            <button class="is-active" data-src="/images/studio-mounted.webp" aria-label="Mounted, front"><img decoding="async" src="/images/studio-mounted.webp" alt="" /></button>
+            <button data-src="/images/studio-apart.webp" aria-label="Sword and plaque side by side"><img decoding="async" src="/images/studio-apart.webp" alt="" /></button>
+            <button data-src="/images/detail-hilt.webp" aria-label="Hilt and etching detail"><img decoding="async" src="/images/detail-hilt.webp" alt="" /></button>
+            <button data-src="/images/poster-sunlit.webp" aria-label="On a sunlit wall"><img decoding="async" src="/images/poster-sunlit.webp" alt="" /></button>
           </div>
         </div>
         <div class="buy__info">
