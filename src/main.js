@@ -9,7 +9,7 @@ import { detectMode, rememberLite } from './mode.js';
 
 /* ------------------------------------------------------------ 3D or lite? */
 // One flag drives everything: <html data-mode="3d|lite"> + window.WS_MODE.
-const MODE = detectMode();
+const MODE = detectMode({ allowOverride: STORE.devModeToggle });
 window.WS_MODE = MODE;
 document.documentElement.dataset.mode = MODE.mode;
 const isLite = () => MODE.mode === 'lite';

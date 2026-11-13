@@ -20,9 +20,9 @@ export const STORE = {
   // Shipping charge shown at checkout (0 = free).
   shippingFee: 0,
 
-  // DEV ONLY: shows a 3D / Lite / Auto switch in the corner so both modes can be
-  // compared. Set to false (or delete) before going live.
-  devModeToggle: true,
+  // DEV ONLY: true shows a 3D / Lite / Auto switch (and honours ?mode=) to compare
+  // both modes. false = mode is always picked automatically per device (live).
+  devModeToggle: false,
 
   instagramReel: 'https://www.instagram.com/reel/DcVy0TZIqpz/',
   instagramProfile: '',

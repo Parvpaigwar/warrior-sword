@@ -50,7 +50,20 @@ function deviceLiteReason() {
   return null;
 }
 
-export function detectMode() {
+export function detectMode({ allowOverride = false } = {}) {
+  if (!allowOverride) {
+    // live site: always decided automatically; drop any choice saved by the dev toggle
+    store(localStorage, (s) => s.removeItem(FORCE_KEY));
+  } else {
+    return detectWithOverride();
+  }
+  const earlier = store(sessionStorage, (s) => s.getItem(AUTO_KEY));
+  if (earlier) return { mode: 'lite', forced: false, reason: earlier };
+  const reason = deviceLiteReason();
+  return reason ? { mode: 'lite', forced: false, reason } : { mode: '3d', forced: false, reason: 'capable device' };
+}
+
+function detectWithOverride() {
   const q = new URLSearchParams(location.search).get('mode');
   if (q === '3d' || q === 'lite') store(localStorage, (s) => s.setItem(FORCE_KEY, q));
   if (q === 'auto') {
