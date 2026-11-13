@@ -74,10 +74,12 @@ export async function createStage(canvas, { mobile }) {
 
   // adaptive resolution governor
   let acc = 0, frames = 0, slowWindows = 0, fastWindows = 0;
+  const perfListeners = [];
   function govern(dt) {
     acc += dt; frames++;
     if (frames < 45) return;
     const avg = acc / frames; acc = 0; frames = 0;
+    perfListeners.forEach((fn) => fn(avg, dpr <= minDpr));
     if (avg > 0.024) { fastWindows = 0; if (++slowWindows >= 2 && dpr > minDpr) { dpr = Math.max(minDpr, dpr - 0.25); renderer.setPixelRatio(dpr); resize(); slowWindows = 0; } }
     else if (avg < 0.0175) { slowWindows = 0; if (++fastWindows >= 6 && dpr < maxDpr) { dpr = Math.min(maxDpr, dpr + 0.25); renderer.setPixelRatio(dpr); resize(); fastWindows = 0; } }
     else { slowWindows = 0; fastWindows = 0; }
@@ -141,6 +143,8 @@ export async function createStage(canvas, { mobile }) {
     renderOnce() { apply(0); renderer.render(scene, camera); },
     snap() { Object.assign(current, target); },
     onFrame(fn) { listeners.push(fn); },
+    // called every ~45 rendered frames with (average frame time in s, already at lowest resolution?)
+    onPerf(fn) { perfListeners.push(fn); },
     // project a product-space point (cm) to CSS pixels
     project(x, y, z) {
       tmp.set(x, y, z);
@@ -148,6 +152,11 @@ export async function createStage(canvas, { mobile }) {
       tmp.project(camera);
       return { x: (tmp.x * 0.5 + 0.5) * W, y: (-tmp.y * 0.5 + 0.5) * H, visible: tmp.z < 1 };
     },
-    dispose() { running = false; renderer.dispose(); },
+    dispose() {
+      running = false;
+      window.removeEventListener('resize', resize);
+      renderer.dispose();
+      renderer.forceContextLoss();
+    },
   };
 }

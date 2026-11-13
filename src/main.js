@@ -5,8 +5,20 @@ import { STORE, fmt } from './config.js';
 import { initCart } from './cart.js';
 import { drawBlueprint } from './blueprint.js';
 import { DEFAULT_STATE } from './three/state.js';
-// three.js + the model load as a separate chunk, in parallel with the page UI
-const stageModule = import('./three/stage.js');
+import { detectMode, rememberLite } from './mode.js';
+
+/* ------------------------------------------------------------ 3D or lite? */
+// One flag drives everything: <html data-mode="3d|lite"> + window.WS_MODE.
+const MODE = detectMode();
+window.WS_MODE = MODE;
+document.documentElement.dataset.mode = MODE.mode;
+const isLite = () => MODE.mode === 'lite';
+function loadLitePhotos() {
+  document.querySelectorAll('img[data-lite-src]').forEach((img) => { if (!img.src) img.src = img.dataset.liteSrc; });
+}
+if (isLite()) loadLitePhotos();
+// three.js + the model load as a separate chunk — and only when the 3D will actually run
+const stageModule = isLite() ? null : import('./three/stage.js');
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,7 +37,7 @@ $('#year').textContent = new Date().getFullYear();
 drawBlueprint($('#blueprint'));
 
 /* ------------------------------------------------------------ smooth scroll */
-const lenis = reduced ? null : new Lenis({ lerp: 0.1, smoothWheel: true });
+const lenis = reduced || isLite() ? null : new Lenis({ lerp: 0.1, smoothWheel: true });
 if (lenis) {
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
@@ -90,13 +102,57 @@ function onScrollUI(y) {
 
 /* ------------------------------------------------------------ 3D stage */
 let stage = null;
-function webglFallback(err) {
-  console.warn('WebGL unavailable, falling back to photos', err);
-  const img = document.createElement('img');
-  img.src = '/images/poster-sunlit.webp';
-  img.alt = 'The Warrior Sword on its walnut plaque';
-  img.style.cssText = 'position:absolute;right:6vw;top:12vh;height:76vh;width:auto;border-radius:24px;z-index:1;object-fit:cover';
-  $('#hero').appendChild(img);
+
+// Switch to the photo version: on WebGL errors, a slow build, or low frame rate.
+function switchToLite(reason) {
+  if (isLite()) return;
+  console.info('[warrior] switching to lite mode:', reason);
+  MODE.mode = 'lite'; MODE.reason = reason; MODE.forced = false;
+  document.documentElement.dataset.mode = 'lite';
+  rememberLite(reason);
+  loadLitePhotos();
+  if (stage) { stage.dispose(); stage = null; }
+  hotspot.style.opacity = '0';
+  updateModebar();
+  requestAnimationFrame(() => { measure(); onScroll(); ScrollTrigger.refresh(); });
+}
+
+// Runtime watchdog: three bad ~0.75 s windows in a row → lite. Skips the first
+// seconds (shader warm-up) and never overrides a mode picked with the toggle.
+function watchFrameRate() {
+  const startedAt = performance.now();
+  let bad = 0;
+  stage.onPerf((avg, atLowestRes) => {
+    if (MODE.forced || performance.now() - startedAt < 4000) return;
+    const tooSlow = (atLowestRes && avg > 1 / 30) || avg > 1 / 20;
+    bad = tooSlow ? bad + 1 : 0;
+    if (bad >= 3) switchToLite(`low frame rate (${Math.round(1 / avg)} fps)`);
+  });
+}
+
+/* dev-only toggle so the two modes can be compared — set STORE.devModeToggle = false to remove */
+let modebar = null;
+function updateModebar() {
+  if (!modebar) return;
+  const forced = MODE.forced ? MODE.mode : 'auto';
+  modebar.querySelectorAll('button').forEach((b) => b.classList.toggle('is-active', b.dataset.mode === forced));
+  const info = modebar.querySelector('.modebar__info');
+  info.textContent = `${MODE.mode === 'lite' ? 'Lite' : '3D'} · ${MODE.reason}`;
+  info.title = info.textContent;
+}
+if (STORE.devModeToggle) {
+  modebar = document.createElement('div');
+  modebar.className = 'modebar';
+  modebar.innerHTML = '<button data-mode="3d">3D</button><button data-mode="lite">Lite</button><button data-mode="auto">Auto</button><span class="modebar__info"></span>';
+  modebar.addEventListener('click', (e) => {
+    const b = e.target.closest('button');
+    if (!b) return;
+    const url = new URL(location.href);
+    url.searchParams.set('mode', b.dataset.mode);
+    location.href = url.toString();
+  });
+  document.body.appendChild(modebar);
+  updateModebar();
 }
 
 const ui = { sep: 0, warm: 0 };
@@ -176,6 +232,7 @@ function stateAt(y) {
 }
 
 // anatomy cards + progress
+const liteAnat = $('#liteAnat');
 const cards = $$('.acard'), dots = $$('#anatomyDots li'), bar = $('#anatomyBar'), hotspot = $('#hotspot');
 let activeStep = -1;
 function updateAnatomy(y) {
@@ -185,6 +242,7 @@ function updateAnatomy(y) {
   const idx = clamp(Math.floor(p * 6 - 0.0001), 0, 5);
   if (idx !== activeStep) {
     activeStep = idx;
+    liteAnat.dataset.step = idx;
     cards.forEach((c, i) => { c.classList.toggle('is-active', i === idx); c.classList.toggle('is-past', i < idx); });
     dots.forEach((d, i) => d.classList.toggle('is-active', i === idx));
   }
@@ -235,12 +293,14 @@ area.addEventListener('pointerleave', endDrag);
 $$('[data-sep]').forEach((b) => b.addEventListener('click', () => {
   ui.sep = Number(b.dataset.sep);
   $$('[data-sep]').forEach((x) => x.classList.toggle('is-active', x === b));
+  $('#liteViewer').classList.toggle('is-apart', ui.sep === 1);
   updateStage(window.scrollY);
 }));
 $$('[data-warm]').forEach((b) => b.addEventListener('click', () => {
   ui.warm = Number(b.dataset.warm);
   $$('[data-warm]').forEach((x) => x.classList.toggle('is-active', x === b));
   $('#viewerGlow').classList.toggle('is-on', ui.warm === 1);
+  $('#liteViewer').classList.toggle('is-warm', ui.warm === 1);
   updateStage(window.scrollY);
 }));
 $('#viewerReset').addEventListener('click', () => {
@@ -260,6 +320,7 @@ window.addEventListener('pointermove', (e) => {
 /* ------------------------------------------------------------ frame loop hooks */
 function registerFrameHooks() {
   stage.onFrame(() => {
+    if (!stage) return; // switched to lite mid-frame
     const ex = stage.extra;
     ex.mx += ((ex.mxT || 0) - ex.mx) * 0.05;
     ex.my += ((ex.myT || 0) - ex.my) * 0.05;
@@ -442,14 +503,20 @@ async function boot() {
   const setP = (p) => { bar.style.transform = `scaleX(${p})`; pct.textContent = String(Math.round(p * 100)).padStart(2, '0'); };
   setP(0.2);
   // build the 3D scene while the fonts load (nothing on screen waits on the lazy photos)
-  const stageReady = stageModule.then(({ createStage }) => createStage($('#stage'), { mobile: isMobile() })).then(
+  const TOO_SLOW = 9000; // a device that needs longer than this to build the scene won't run it well
+  const stageReady = !stageModule ? Promise.resolve(null) : Promise.race([
+    stageModule.then(({ createStage }) => createStage($('#stage'), { mobile: isMobile() })),
+    new Promise((_, rej) => setTimeout(() => rej(new Error('3D took too long to load')), TOO_SLOW)),
+  ]).then(
     (s) => { setP(0.85); return s; },
-    (err) => { webglFallback(err); return null; },
+    (err) => { switchToLite(err?.message?.includes('too long') ? '3D took too long to load' : 'WebGL error'); return null; },
   );
   await Promise.race([document.fonts?.ready, new Promise((r) => setTimeout(r, 2500))]);
   setP(0.55);
   stage = await stageReady;
-  if (stage) registerFrameHooks();
+  if (stage && isLite()) { stage.dispose(); stage = null; } // finished after the timeout fired
+  if (isLite()) await Promise.race([$('.lite-hero img').decode?.().catch(() => {}), new Promise((r) => setTimeout(r, 2500))]);
+  if (stage) { registerFrameHooks(); watchFrameRate(); }
   measure();
   if (stage) {
     // start offstage-ish so the model glides in

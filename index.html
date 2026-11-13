@@ -40,7 +40,7 @@
     <nav class="nav__links" aria-label="Primary">
       <a href="#story" data-scroll>Story</a>
       <a href="#anatomy" data-scroll>Anatomy</a>
-      <a href="#viewer" data-scroll>3D View</a>
+      <a href="#viewer" data-scroll><span class="only-3d">3D View</span><span class="lite-only">Up close</span></a>
       <a href="#dimensions" data-scroll>Dimensions</a>
       <a href="#gallery" data-scroll>Gallery</a>
       <a href="#faq" data-scroll>FAQ</a>
@@ -59,7 +59,7 @@
     <nav>
       <a href="#story" data-scroll>Story</a>
       <a href="#anatomy" data-scroll>Anatomy</a>
-      <a href="#viewer" data-scroll>3D View</a>
+      <a href="#viewer" data-scroll><span class="only-3d">3D View</span><span class="lite-only">Up close</span></a>
       <a href="#dimensions" data-scroll>Dimensions</a>
       <a href="#gallery" data-scroll>Gallery</a>
       <a href="#buy" data-scroll>Buy now</a>
@@ -73,6 +73,7 @@
     <section class="hero" id="hero" data-stage="hero">
       <div class="hero__light" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="hero__ring" aria-hidden="true"></div>
+      <figure class="lite-hero lite-only"><img data-lite-src="/images/product-cutout.webp" alt="The Warrior Sword mounted on its walnut wall plaque" width="341" height="1224" /></figure>
       <div class="hero__content">
         <p class="eyebrow hero__eyebrow"><span class="dot"></span> Collector's Series · No. 01</p>
         <h1 class="hero__title">
@@ -85,7 +86,7 @@
           <div class="price"><span class="price__now" data-price></span><span class="price__note">Pan-India delivery · wall-mount kit included</span></div>
           <div class="hero__ctas">
             <button class="btn btn--dark magnetic" data-add-to-cart><span>Add to cart</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-            <a href="#viewer" class="btn btn--ghost magnetic" data-scroll><span>Explore in 3D</span></a>
+            <a href="#viewer" class="btn btn--ghost magnetic" data-scroll><span class="only-3d">Explore in 3D</span><span class="lite-only">See it up close</span></a>
           </div>
         </div>
         <ul class="hero__facts">
@@ -111,6 +112,7 @@
 
     <!-- STORY -->
     <section class="story" id="story" data-stage="story">
+      <figure class="lite-story lite-only"><img data-lite-src="/images/closeup-guard.webp" alt="Close-up of the dragon hilt and gold coil grip" /></figure>
       <div class="story__inner">
         <p class="eyebrow">More than a sword</p>
         <p class="story__text" data-words>Some pieces decorate a wall. <em>This one commands it.</em> Mirror steel, a dragon-headed hilt and a dark walnut plaque — a collector's centrepiece built to hold the whole room.</p>
@@ -129,6 +131,7 @@
           <p class="eyebrow">Anatomy of a legend</p>
           <div class="anatomy__progress"><i id="anatomyBar"></i></div>
         </div>
+        <div class="lite-anat lite-only" id="liteAnat" data-step="0" aria-hidden="true"><img data-lite-src="/images/product-cutout.webp" alt="" width="341" height="1224" /></div>
         <div class="anatomy__cards" id="anatomyCards">
           <article class="acard" data-step="0">
             <span class="acard__num">01 / 06</span>
@@ -176,8 +179,12 @@
       <div class="viewer__glow" id="viewerGlow" aria-hidden="true"></div>
       <div class="viewer__sticky" id="viewerArea">
         <div class="viewer__head">
-          <p class="eyebrow">Interactive 3D</p>
-          <h2 class="h2">Turn it in <em>your hands.</em></h2>
+          <p class="eyebrow"><span class="only-3d">Interactive 3D</span><span class="lite-only">Up close</span></p>
+          <h2 class="h2"><span class="only-3d">Turn it in <em>your hands.</em></span><span class="lite-only">See every <em>detail.</em></span></h2>
+        </div>
+        <div class="lite-viewer lite-only" id="liteViewer">
+          <img class="lite-viewer__mounted" data-lite-src="/images/product-cutout.webp" alt="The sword mounted on the plaque" width="341" height="1224" />
+          <img class="lite-viewer__apart" data-lite-src="/images/studio-apart.webp" alt="The sword and the plaque side by side" />
         </div>
         <div class="viewer__hint" id="viewerHint"><span class="viewer__hand">↔</span> Drag to rotate</div>
         <div class="viewer__controls">
@@ -193,7 +200,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4h4"/></svg>
           </button>
         </div>
-        <p class="viewer__note">3D model is an illustrative render. See the <a href="#buy" data-scroll>studio photos</a> for the actual piece.</p>
+        <p class="viewer__note only-3d">3D model is an illustrative render. See the <a href="#buy" data-scroll>studio photos</a> for the actual piece.</p>
       </div>
     </section>
 
@@ -383,7 +390,7 @@
         <p class="footer__tag">A collector's wall piece for those who value heritage, detail and power.</p>
       </div>
       <div class="footer__cols">
-        <div><h4>Explore</h4><a href="#anatomy" data-scroll>Anatomy</a><a href="#viewer" data-scroll>3D view</a><a href="#gallery" data-scroll>Gallery</a></div>
+        <div><h4>Explore</h4><a href="#anatomy" data-scroll>Anatomy</a><a href="#viewer" data-scroll><span class="only-3d">3D view</span><span class="lite-only">Up close</span></a><a href="#gallery" data-scroll>Gallery</a></div>
         <div><h4>Shop</h4><a href="#buy" data-scroll>Buy now</a><a href="#dimensions" data-scroll>Dimensions</a><a href="#faq" data-scroll>FAQ</a></div>
         <div><h4>Follow</h4><a data-reel target="_blank" rel="noopener">Instagram reel ↗</a></div>
       </div>
