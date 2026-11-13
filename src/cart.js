@@ -1,14 +1,9 @@
-// Cart drawer, checkout modal and order confirmation.
+// Cart drawer + WhatsApp ordering: "Buy" opens a WhatsApp chat with the order pre-filled.
 import { STORE, fmt } from './config.js';
 
 const KEY = 'warrior-cart-v1';
 const P = STORE.product;
 const $ = (s, r = document) => r.querySelector(s);
-
-const STATES = ['Andaman and Nicobar Islands', 'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chandigarh', 'Chhattisgarh',
-  'Dadra and Nagar Haveli and Daman and Diu', 'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jammu and Kashmir', 'Jharkhand',
-  'Karnataka', 'Kerala', 'Ladakh', 'Lakshadweep', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha',
-  'Puducherry', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'];
 
 function load() {
   try { const q = JSON.parse(localStorage.getItem(KEY))?.qty; return Number.isInteger(q) ? Math.max(0, Math.min(P.maxQty, q)) : 0; }
@@ -18,7 +13,7 @@ function save(qty) { try { localStorage.setItem(KEY, JSON.stringify({ qty })); }
 
 export function initCart({ lockScroll, unlockScroll }) {
   let qty = load();
-  const drawer = $('#drawer'), scrim = $('#scrim'), modal = $('#checkout');
+  const drawer = $('#drawer'), scrim = $('#scrim');
   const countEl = $('#cartCount');
   const toastEl = $('#toast');
   let toastTimer;
@@ -61,11 +56,6 @@ export function initCart({ lockScroll, unlockScroll }) {
     }
     $('#cartSubtotal').textContent = fmt(subtotal());
     $('#cartShipping').textContent = shipping() ? fmt(shipping()) : 'Free';
-    // checkout summary
-    $('#summaryItems').innerHTML = `<div class="sitem"><img src="${P.image}" alt="" /><div><b>${P.name}</b><small>Qty ${qty}</small></div><span>${fmt(subtotal())}</span></div>`;
-    $('#sumSubtotal').textContent = fmt(subtotal());
-    $('#sumShipping').textContent = shipping() ? fmt(shipping()) : 'Free';
-    $('#sumTotal').textContent = fmt(subtotal() + (qty ? shipping() : 0));
   }
 
   function add(n = 1, silent = false) {
@@ -82,19 +72,26 @@ export function initCart({ lockScroll, unlockScroll }) {
   function openDrawer() { drawer.classList.add('is-open'); scrim.classList.add('is-open'); drawer.setAttribute('aria-hidden', 'false'); lockScroll(); }
   function closeDrawer() { drawer.classList.remove('is-open'); scrim.classList.remove('is-open'); drawer.setAttribute('aria-hidden', 'true'); unlockScroll(); }
 
-  function openCheckout() {
-    if (!qty) add(1, true);
+  // Open WhatsApp with the order details typed out for the customer.
+  function orderOnWhatsApp(n) {
+    const count = Math.max(1, Math.min(P.maxQty, n));
+    const total = count * P.price + shipping();
+    const msg = [
+      `Hi! I'd like to buy ${P.name}.`,
+      '',
+      `• Product: ${P.name} (${P.subtitle})`,
+      `• Quantity: ${count}`,
+      `• Price: ${fmt(P.price)} each`,
+      `• Total: ${fmt(total)}${shipping() ? ` (incl. ${fmt(shipping())} shipping)` : ' (free delivery)'}`,
+      '',
+      'Please share the next steps for payment and delivery.',
+    ].join('\n');
+    const url = `https://wa.me/${STORE.whatsappNumber}?text=${encodeURIComponent(msg)}`;
     closeDrawer();
-    $('#checkoutForm').hidden = false;
-    $('#success').hidden = true;
-    modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false'); lockScroll();
-    setTimeout(() => modal.querySelector('input')?.focus({ preventScroll: true }), 350);
+    const win = window.open(url, '_blank');
+    if (win) win.opener = null;
+    else window.location.href = url; // popup blocked → same tab
   }
-  function closeCheckout() { modal.classList.remove('is-open'); modal.setAttribute('aria-hidden', 'true'); unlockScroll(); }
-
-  // state options
-  const sel = $('#stateSelect');
-  STATES.forEach((s) => sel.insertAdjacentHTML('beforeend', `<option>${s}</option>`));
 
   // delegated events
   document.addEventListener('click', (e) => {
@@ -104,16 +101,12 @@ export function initCart({ lockScroll, unlockScroll }) {
     else if (t.matches('[data-cart-qty]')) { qty = Math.max(0, Math.min(P.maxQty, qty + Number(t.dataset.cartQty))); render(); }
     else if (t.matches('[data-cart-remove]')) { qty = 0; render(); }
     else if (t.matches('[data-close-drawer]')) closeDrawer();
-    else if (t.matches('[data-close-modal]')) closeCheckout();
   });
   $('#cartBtn').addEventListener('click', openDrawer);
   scrim.addEventListener('click', closeDrawer);
-  $('#checkoutBtn').addEventListener('click', openCheckout);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeCheckout(); });
+  $('#checkoutBtn').addEventListener('click', () => orderOnWhatsApp(qty));
   document.addEventListener('keydown', (e) => {
-    if (e.key !== 'Escape') return;
-    if (modal.classList.contains('is-open')) closeCheckout();
-    else if (drawer.classList.contains('is-open')) closeDrawer();
+    if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
   });
 
   // product section quantity + buttons
@@ -124,61 +117,7 @@ export function initCart({ lockScroll, unlockScroll }) {
     qtyVal.textContent = pickQty;
   }));
   $('#addBtn').addEventListener('click', () => add(pickQty));
-  $('#buyNowBtn').addEventListener('click', () => {
-    qty = Math.min(P.maxQty, Math.max(qty, pickQty));
-    render();
-    openCheckout();
-  });
-
-  // checkout validation + submit
-  const form = $('#orderForm');
-  form.addEventListener('input', (e) => e.target.closest('.field')?.classList.remove('is-invalid'));
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const err = $('#formError');
-    let firstBad = null;
-    form.querySelectorAll('input, select').forEach((el) => {
-      if (el.type === 'radio') return;
-      el.value = el.value.trim();
-      const ok = el.checkValidity();
-      el.closest('.field')?.classList.toggle('is-invalid', !ok);
-      if (!ok && !firstBad) firstBad = el;
-    });
-    if (firstBad) {
-      err.textContent = firstBad.name === 'phone' ? 'Please enter a valid 10-digit mobile number.'
-        : firstBad.name === 'pin' ? 'Please enter a valid 6-digit PIN code.'
-        : 'Please fill in the highlighted fields.';
-      firstBad.focus();
-      return;
-    }
-    err.textContent = '';
-    const d = Object.fromEntries(new FormData(form));
-    const id = 'WS-' + Date.now().toString(36).toUpperCase().slice(-6);
-    const total = subtotal() + shipping();
-    const order = { id, ...d, qty, total, createdAt: new Date().toISOString() };
-    try {
-      const all = JSON.parse(localStorage.getItem('warrior-orders') || '[]');
-      all.push(order);
-      localStorage.setItem('warrior-orders', JSON.stringify(all));
-    } catch { /* ignore */ }
-
-    $('#orderId').textContent = id;
-    $('#orderPhone').textContent = d.phone;
-    const wa = $('#waLink');
-    if (STORE.whatsappNumber) {
-      const msg = [`New order ${id}`, `${P.name} × ${qty} = ${fmt(total)}`, `Payment: ${d.payment}`, '',
-        d.name, d.phone, d.email, d.address, `${d.city}, ${d.state} - ${d.pin}`].filter((l) => l !== undefined).join('\n');
-      wa.href = `https://wa.me/${STORE.whatsappNumber}?text=${encodeURIComponent(msg)}`;
-      wa.hidden = false;
-    } else wa.hidden = true;
-
-    $('#checkoutForm').hidden = true;
-    $('#success').hidden = false;
-    modal.querySelector('.modal__panel').scrollTop = 0;
-    qty = 0;
-    render();
-    form.reset();
-  });
+  $('#buyNowBtn').addEventListener('click', () => orderOnWhatsApp(pickQty));
 
   render();
   return { add, openDrawer };

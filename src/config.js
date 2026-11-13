@@ -13,9 +13,9 @@ export const STORE = {
   },
   currency: '₹',
 
-  // Orders are sent to this WhatsApp number (country code + number, digits only),
-  // e.g. '919876543210'. Leave empty to only show the on-site confirmation.
-  whatsappNumber: '',
+  // "Buy" sends the customer to this WhatsApp chat with the order pre-filled
+  // (country code + number, digits only).
+  whatsappNumber: '919407161837',
 
   // Shipping charge shown at checkout (0 = free).
   shippingFee: 0,

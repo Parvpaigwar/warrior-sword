@@ -570,3 +570,4 @@ legend { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; f
 
 /* ---------------- performance: freeze looping decor while it's off screen ---------------- */
 .is-offscreen, .is-offscreen * { animation-play-state: paused !important; }
+.btn .wa-icon { width: 19px; height: 19px; flex: none; stroke: none; }
